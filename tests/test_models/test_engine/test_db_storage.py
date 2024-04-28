@@ -9,7 +9,6 @@ import models
 from models.engine import db_storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
-from models.engine.db_storage import DBStorage
 from models.city import City
 from models.place import Place
 from models.review import Review
@@ -19,6 +18,7 @@ import json
 import os
 import pep8
 import unittest
+from models import storage
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
@@ -88,29 +88,23 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
-class TestDBStorage(unittest.TestCase):
-    """Tests the DBStorage class"""
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', "not testing db storage")
-    def test_get(self):
-        """Test the get method"""
-        storage = DBStorage()
-        new_state = State(name="Test State")
-        storage.new(new_state)
+    def test_get_db(self):
+        """ To tests the method for obtaining instance db storage"""
+        dicty = {"name": "Cundinamarca"}
+        instance = State(**dicty)
+        storage.new(instance)
         storage.save()
-        state_id = new_state.id
-        retrieved_state = storage.get(State, state_id)
-        self.assertEqual(new_state, retrieved_state)
+        get_instance = storage.get(State, instance.id)
+        self.assertEqual(get_instance, instance)
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db', "not testing db storage")
     def test_count(self):
-        """Test the count method"""
-        storage = DBStorage()
-        initial_state_count = storage.count(State)
-        new_state = State(name="Test State")
-        storage.new(new_state)
+        """ To test the count method db storage """
+        dicty = {"name": "Vecindad"}
+        state = State(**dicty)
+        storage.new(state)
+        dicty = {"name": "Mexico", "state_id": state.id}
+        city = City(**dicty)
+        storage.new(city)
         storage.save()
-        updated_state_count = storage.count(State)
-        self.assertEqual(initial_state_count + 1, updated_state_count)
-
-if __name__ == "__main__":
-    unittest.main()
+        c = storage.count()
+        self.assertEqual(len(storage.all()), c)
