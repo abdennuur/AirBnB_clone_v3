@@ -23,8 +23,8 @@ def number_objects():
     classes = [Amenity, City, Place, Review, State, User]
     names = ["amenities", "cities", "places", "reviews", "states", "users"]
 
-    num_objs = {}
-    for i in range(len(classes)):
-        num_objs[names[i]] = storage.count(classes[i])
+    nm_objs = {}
+    for ix in range(len(classes)):
+        nm_objs[names[ix]] = storage.count(classes[ix])
 
-    return jsonify(num_objs)
+    return jsonify(nm_objs)
